@@ -26,7 +26,7 @@ class EnvironmentTest {
         userPath = Paths.get(System.getProperty("user.dir"));
 
         // Resources
-        URL url = Thread.currentThread().getContextClassLoader().getResource("mcmod.yaml");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("mcmod.yml");
         assert url != null;
         resPath = Paths.get(url.getPath().substring(1)).getParent();
     }
@@ -35,23 +35,23 @@ class EnvironmentTest {
     void constructorString() {
         Environment env = new Environment("");
 
-        Assertions.assertEquals(env.path.toString(), userPath.toString());
-        Assertions.assertNotNull(env.storage);
+        Assertions.assertEquals(env.getPath().toString(), userPath.toString());
+        Assertions.assertNotNull(env.getStorage());
     }
 
     @Test
     void constructorPath() {
         Environment env = new Environment(Paths.get("").toAbsolutePath());
 
-        Assertions.assertEquals(env.path, userPath);
-        Assertions.assertNotNull(env.storage);
+        Assertions.assertEquals(env.getPath(), userPath);
+        Assertions.assertNotNull(env.getStorage());
     }
 
     @Test
     void getYMLPath() {
         Environment env = new Environment("");
 
-        Assertions.assertEquals(env.getYMLPath(), userPath.resolve("mcmod.yaml"));
+        Assertions.assertEquals(env.getYml(), userPath.resolve("mcmod.yml"));
     }
 
     @Test
@@ -59,8 +59,8 @@ class EnvironmentTest {
         Environment env = new Environment(resPath);
         env.load();
 
-        HashMap defaults = env.storage.defaults;
-        HashMap mods = env.storage.mods;
+        HashMap defaults = env.getStorage().getDefaults();
+        HashMap mods = env.getStorage().getMods();
 
         Assertions.assertEquals(defaults.get("mcver"), "1.12.2");
         Assertions.assertEquals(defaults.get("type"), "release");
@@ -96,12 +96,13 @@ class EnvironmentTest {
     void changeDefaults() {
         Environment env = new Environment(resPath);
         env.load();
+        HashMap<String, String> defaults = env.getStorage().getDefaults();
 
-        env.storage.defaults.put("mcver", "1.16.2");
-        env.storage.defaults.put("type", "alpha");
+        defaults.put("mcver", "1.16.2");
+        defaults.put("type", "alpha");
 
-        Assertions.assertEquals(env.storage.defaults.get("mcver"), "1.16.2");
-        Assertions.assertEquals(env.storage.defaults.get("type"), "alpha");
+        Assertions.assertEquals(defaults.get("mcver"), "1.16.2");
+        Assertions.assertEquals(defaults.get("type"), "alpha");
     }
 
     @Test
@@ -109,9 +110,10 @@ class EnvironmentTest {
         Environment env = new Environment(resPath);
         env.load();
 
-        env.storage.mods.get("jei").put("mcver", "1.5.2");
+        HashMap<String, String> jei = env.getStorage().getMods().get("jei");
+        jei.put("mcver", "1.5.2");
 
-        Assertions.assertEquals(env.storage.mods.get("jei").get("mcver"), "1.5.2");
+        Assertions.assertEquals(jei.get("mcver"), "1.5.2");
     }
 
     @Test
@@ -119,14 +121,16 @@ class EnvironmentTest {
         Environment env = new Environment(resPath);
         env.load();
 
-        env.storage.defaults.put("mcver", "1.16.2");
-        env.storage.defaults.put("type", "alpha");
+        HashMap<String, String> defaults = env.getStorage().getDefaults();
 
+        defaults.put("mcver", "1.16.2");
+        defaults.put("type", "alpha");
         env.save();
 
         env.load();
+        defaults = env.getStorage().getDefaults();
 
-        Assertions.assertEquals(env.storage.defaults.get("mcver"), "1.16.2");
-        Assertions.assertEquals(env.storage.defaults.get("type"), "alpha");
+        Assertions.assertEquals(defaults.get("mcver"), "1.16.2");
+        Assertions.assertEquals(defaults.get("type"), "alpha");
     }
 }

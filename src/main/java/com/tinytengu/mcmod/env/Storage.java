@@ -8,18 +8,49 @@ import java.util.HashMap;
  */
 public class Storage {
     /** Storage default values */
-    public HashMap<String, String> defaults;
+    private HashMap<String, String> defaults;
 
     /** Storage mods list */
-    public HashMap<String, HashMap<String, String>> mods;
+    private HashMap<String, HashMap<String, String>> mods;
 
     /**
      * Creates new object
      */
     public Storage() {
-
         this.defaults = new HashMap<>();
         this.mods = new HashMap<>();
+    }
+
+    /**
+     * Get storage defaults
+     * @return defaults
+     */
+    public HashMap<String, String> getDefaults() {
+        return defaults;
+    }
+
+    /**
+     * Set storage defaults
+     * @param defaults defaults
+     */
+    public void setDefaults(HashMap<String, String> defaults) {
+        this.defaults = defaults;
+    }
+
+    /**
+     * Get storage mods
+     * @return mods
+     */
+    public HashMap<String, HashMap<String, String>> getMods() {
+        return mods;
+    }
+
+    /**
+     * Set storage mods
+     * @param mods mods
+     */
+    public void setMods(HashMap<String, HashMap<String, String>> mods) {
+        this.mods = mods;
     }
 
     /***
@@ -27,7 +58,7 @@ public class Storage {
      * @param yamlMap YAML map
      */
     public void load(HashMap yamlMap) {
-        this.defaults = (HashMap<String, String>)yamlMap.get("defaults");
-        this.mods = (HashMap<String, HashMap<String, String>>)yamlMap.get("mods");
+        this.setDefaults((HashMap<String, String>)yamlMap.get("defaults"));
+        this.setMods((HashMap<String, HashMap<String, String>>)yamlMap.get("mods"));
     }
 }

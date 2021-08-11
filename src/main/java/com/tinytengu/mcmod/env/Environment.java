@@ -22,10 +22,10 @@ import org.yaml.snakeyaml.nodes.Tag;
  */
 public class Environment {
     /** Environment storage */
-    Storage storage;
+    private Storage storage;
 
     /** Environment folder path */
-    public Path path;
+    private Path path;
 
     /**
      * Creates new object
@@ -48,11 +48,43 @@ public class Environment {
     }
 
     /**
-     * Get mcmod.yaml file path from environment path
-     * @return mcmod.yaml path
+     * Get environment storage
+     * @return storage
      */
-    public Path getYMLPath() {
-        return this.path.resolve("mcmod.yaml");
+    public Storage getStorage() {
+        return storage;
+    }
+
+    /**
+     * Set environment storage
+     * @param storage storage
+     */
+    public void setStorage(Storage storage) {
+        this.storage = storage;
+    }
+
+    /**
+     * Get environment path
+     * @return path
+     */
+    public Path getPath() {
+        return path;
+    }
+
+    /**
+     * Set environment path
+     * @param path path
+     */
+    public void setPath(Path path) {
+        this.path = path;
+    }
+
+    /**
+     * Get environment .yml file path
+     * @return file path
+     */
+    public Path getYml() {
+        return this.path.resolve("mcmod.yml");
     }
 
     /**
@@ -62,7 +94,7 @@ public class Environment {
         // Reading file
         InputStream inputStream = null;
         try {
-            inputStream = new FileInputStream(this.getYMLPath().toString());
+            inputStream = new FileInputStream(this.getYml().toString());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -81,7 +113,7 @@ public class Environment {
         String result = yaml.dumpAs(this.storage, Tag.MAP, null);
 
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(this.getYMLPath().toString()), StandardCharsets.UTF_8))) {
+                new FileOutputStream(this.getYml().toString()), StandardCharsets.UTF_8))) {
             writer.write(result);
         } catch (IOException e) {
             e.printStackTrace();
