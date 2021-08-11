@@ -27,16 +27,30 @@ public class Environment {
     /** Environment folder path */
     public Path path;
 
+    /**
+     * Creates new object
+     * @param path environment folder
+     * @see Environment#Environment(String) 
+     */
     public Environment(Path path) {
         this.path = path;
         this.storage = new Storage();
     }
 
+    /**
+     * Creates new object
+     * @param path environment folder
+     * @see Environment#Environment(Path)
+     */
     public Environment(String path) {
-        this.path = Paths.get(path);
+        this.path = Paths.get(path).toAbsolutePath();
         this.storage = new Storage();
     }
 
+    /**
+     * Get mcmod.yaml file path from environment path
+     * @return mcmod.yaml path
+     */
     public Path getYMLPath() {
         return this.path.resolve("mcmod.yaml");
     }

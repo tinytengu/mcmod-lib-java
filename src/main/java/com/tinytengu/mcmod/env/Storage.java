@@ -8,10 +8,10 @@ import java.util.HashMap;
  */
 public class Storage {
     /** Storage default values */
-    public HashMap defaults;
+    public HashMap<String, String> defaults;
 
     /** Storage mods list */
-    public HashMap mods;
+    public HashMap<String, HashMap<String, String>> mods;
 
     /**
      * Creates new object
@@ -27,7 +27,7 @@ public class Storage {
      * @param yamlMap YAML map
      */
     public void load(HashMap yamlMap) {
-        this.defaults = (HashMap)yamlMap.get("defaults");
-        this.mods = (HashMap)yamlMap.get("mods");
+        this.defaults = (HashMap<String, String>)yamlMap.get("defaults");
+        this.mods = (HashMap<String, HashMap<String, String>>)yamlMap.get("mods");
     }
 }
