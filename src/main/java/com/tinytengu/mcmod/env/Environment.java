@@ -90,14 +90,9 @@ public class Environment {
     /**
      * Load environment data
      */
-    public void load() {
+    public void load() throws FileNotFoundException {
         // Reading file
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(this.getYml().toString());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        InputStream inputStream = new FileInputStream(this.getYml().toString());
 
         // Loading YAML schema
         Yaml yaml = new Yaml();
@@ -108,15 +103,15 @@ public class Environment {
     /**
      * Save environment storage data to mcmod.yaml
      */
-    public void save() {
+    public void save() throws IOException {
         Yaml yaml = new Yaml();
-        String result = yaml.dumpAs(this.storage, Tag.MAP, null);
+        String result = yaml.dumpAs(this.getStorage(), Tag.MAP, null);
 
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(this.getYml().toString()), StandardCharsets.UTF_8))) {
-            writer.write(result);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        FileOutputStream fileOutputStream = new FileOutputStream(this.getYml().toString());
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
+
+        Writer writer = new BufferedWriter(outputStreamWriter);
+        writer.write(result);
+        writer.close();
     }
 }

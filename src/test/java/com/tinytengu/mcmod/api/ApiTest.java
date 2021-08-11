@@ -1,11 +1,12 @@
 package com.tinytengu.mcmod.api;
 
 import static org.junit.jupiter.api.Assertions.*;
-import com.tinytengu.mcmod.api.http.APIException;
-import com.tinytengu.mcmod.api.http.HttpClient;
+
+import com.tinytengu.mcmod.api.http.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -64,7 +65,35 @@ class ApiTest {
     }
 
     @Test
-    void getModThrowsException() {
+    void getModThrowsQueuedException() {
+        String uuid = UUID.randomUUID().toString();
+        assertThrows(QueuedException.class, () -> api.getMod(uuid));
+    }
+
+    @Test
+    void getModThrowsNonCanonicalPathException() {
+        String uuid = UUID.randomUUID().toString();
+        assertThrows(QueuedException.class, () -> api.getMod(uuid));
+    }
+
+    @Test
+    void getModInvalidPathException() {
+        assertThrows(InvalidPathException.class, () -> api.getMod("jei1.2"));
+    }
+
+    @Test
+    void getModDoesNotExistsException() throws IOException, InterruptedException {
+        String uuid = UUID.randomUUID().toString();
+        try {
+            api.getMod(uuid);
+        } catch (APIException e) {
+            Thread.sleep(5000);
+        }
+        assertThrows(DoesNotExistsException.class, () -> api.getMod(uuid));
+    }
+
+    @Test
+    void getModThrowsAPIException() {
         String uuid = UUID.randomUUID().toString();
         assertThrows(APIException.class, () -> api.getMod(uuid));
     }

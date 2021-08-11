@@ -1,14 +1,19 @@
 package com.tinytengu.mcmod.env;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+@SuppressWarnings("SpellCheckingInspection")
 class EnvironmentTest {
     /**
      * Current working directory path
@@ -20,6 +25,21 @@ class EnvironmentTest {
      */
     Path resPath;
 
+    /**
+     * Test environment
+     */
+    Environment env;
+
+    /**
+     * Test storage defaults
+     */
+    HashMap<String, String> storageDefaults;
+
+    /**
+     * Test storage mods
+     */
+    HashMap<String, HashMap<String, String>> storageMods;
+
     @BeforeEach
     void setUp() {
         // CWD
@@ -29,6 +49,34 @@ class EnvironmentTest {
         URL url = Thread.currentThread().getContextClassLoader().getResource("mcmod.yml");
         assert url != null;
         resPath = Paths.get(url.getPath().substring(1)).getParent();
+    }
+
+    @BeforeEach
+    @AfterEach
+    void setUpEnvironment() throws IOException {
+        storageDefaults = new HashMap<String, String>() {{
+            put("mcver", "1.12.2");
+            put("type", "release");
+        }};
+
+        storageMods = new HashMap<String, HashMap<String, String>>() {{
+            put("jei", new HashMap<String, String>(){{
+                put("mcver", "1.16.2");
+                put("type", "beta");
+                put("filename", "jei1.16.2-beta.jar");
+            }});
+            put("autoreglib", new HashMap<String, String>(){{
+                put("mcver", "1.15.5");
+                put("type", "alpha");
+                put("filename", "autoreglib1.15.5-alpha.jar");
+            }});
+        }};
+
+        env = new Environment(resPath);
+        env.getStorage().setDefaults(storageDefaults);
+        env.getStorage().setMods(storageMods);
+
+        env.save();
     }
 
     @Test
@@ -48,7 +96,30 @@ class EnvironmentTest {
     }
 
     @Test
-    void getYMLPath() {
+    void getStorage() {
+        assertNotNull(env.getStorage());
+    }
+
+    @Test
+    void setStorage() {
+        Storage storage = env.getStorage();
+        env.setStorage(new Storage());
+        assertNotEquals(env.getStorage(), storage);
+    }
+
+    @Test
+    void getPath() {
+        assertEquals(env.getPath(), resPath);
+    }
+
+    @Test
+    void setPath() {
+        env.setPath(Paths.get("C:\\"));
+        assertEquals(env.getPath().toString(), "C:\\");
+    }
+
+    @Test
+    void getYml() {
         Environment env = new Environment("");
 
         assertEquals(env.getYml(), userPath.resolve("mcmod.yml"));
@@ -56,46 +127,32 @@ class EnvironmentTest {
 
     @Test
     void load() {
-        Environment env = new Environment(resPath);
-        env.load();
+        assertDoesNotThrow(env::load);
 
         HashMap defaults = env.getStorage().getDefaults();
         HashMap mods = env.getStorage().getMods();
 
-        assertEquals(defaults.get("mcver"), "1.12.2");
-        assertEquals(defaults.get("type"), "release");
+        storageDefaults.forEach((key, value) -> assertEquals(defaults.get(key), value));
 
-        HashMap<String, HashMap> storageMods = new HashMap<String, HashMap>() {{
-            put("jei", new HashMap<String, String>(){{
-                put("mcver", "1.16.2");
-                put("type", "beta");
-                put("filename", "jei1.16.2-beta.jar");
-            }});
-            put("autoreglib", new HashMap<String, String>(){{
-                put("mcver", "1.15.5");
-                put("type", "alpha");
-                put("filename", "autoreglib1.15.5-alpha.jar");
-            }});
-        }};
-
-        for (Map.Entry<String, HashMap> entry : storageMods.entrySet()) {
-            String name = entry.getKey();
-            HashMap values = entry.getValue();
+        storageMods.forEach((name, value) -> {
             assertNotNull(mods.get(name));
 
-            values.forEach((vname, vvalue) -> {
-                assertEquals(
-                        ((HashMap) mods.get(name)).get(vname),
-                        vvalue
-                );
-            });
-        }
+            value.forEach((vname, vvalue) -> assertEquals(
+                    ((HashMap) mods.get(name)).get(vname),
+                    vvalue
+            ));
+        });
+    }
+
+    @Test
+    void loadThrowsFileNotFoundException() {
+        Environment env = new Environment("/");
+        assertThrows(FileNotFoundException.class, env::load);
     }
 
     @Test
     void changeDefaults() {
-        Environment env = new Environment(resPath);
-        env.load();
+        assertDoesNotThrow(env::load);
         HashMap<String, String> defaults = env.getStorage().getDefaults();
 
         defaults.put("mcver", "1.16.2");
@@ -107,8 +164,7 @@ class EnvironmentTest {
 
     @Test
     void changeMods() {
-        Environment env = new Environment(resPath);
-        env.load();
+        assertDoesNotThrow(env::load);
 
         HashMap<String, String> jei = env.getStorage().getMods().get("jei");
         jei.put("mcver", "1.5.2");
@@ -118,19 +174,24 @@ class EnvironmentTest {
 
     @Test
     void save() {
-        Environment env = new Environment(resPath);
-        env.load();
+        assertDoesNotThrow(env::load);
 
         HashMap<String, String> defaults = env.getStorage().getDefaults();
 
         defaults.put("mcver", "1.16.2");
         defaults.put("type", "alpha");
-        env.save();
+        assertDoesNotThrow(env::save);
 
-        env.load();
+        assertDoesNotThrow(env::load);
         defaults = env.getStorage().getDefaults();
 
         assertEquals(defaults.get("mcver"), "1.16.2");
         assertEquals(defaults.get("type"), "alpha");
+    }
+
+    @Test
+    void saveThrowsIOException() {
+        env.setPath(Paths.get("/no/such/place"));
+        assertThrows(IOException.class, () -> env.save());
     }
 }

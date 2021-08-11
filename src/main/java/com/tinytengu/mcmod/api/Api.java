@@ -84,7 +84,7 @@ public class Api {
         HttpEntity entity = response.getEntity();
 
         if(entity == null) {
-            throw new InvalidResponseException();
+            return new JSONObject();
         }
 
         // Convert response to JSON object
@@ -97,10 +97,11 @@ public class Api {
 
         switch (statusCode) {
             case 202: throw new QueuedException(errorTitle);
-            case 301: throw new NonCanonicalPathException(errorTitle);
+            case 301:
+            case 500:
+                throw new APIException(errorTitle);
             case 400: throw new InvalidPathException(errorTitle);
             case 404: throw new DoesNotExistsException(errorTitle);
-            case 500: throw new APIException(errorTitle);
         }
         return json;
     }
