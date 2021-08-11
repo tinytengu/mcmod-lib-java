@@ -83,10 +83,6 @@ public class Api {
         HttpResponse response = this.getClient().get(baseUrl + id);
         HttpEntity entity = response.getEntity();
 
-        if(entity == null) {
-            return new JSONObject();
-        }
-
         // Convert response to JSON object
         String result = EntityUtils.toString(entity);
         JSONObject json = new JSONObject(result);
