@@ -52,13 +52,4 @@ public class Storage {
     public void setMods(HashMap<String, HashMap<String, String>> mods) {
         this.mods = mods;
     }
-
-    /***
-     * Load yamlMap structure to Storage fields
-     * @param yamlMap YAML map
-     */
-    public void load(HashMap yamlMap) {
-        this.setDefaults((HashMap<String, String>)yamlMap.get("defaults"));
-        this.setMods((HashMap<String, HashMap<String, String>>)yamlMap.get("mods"));
-    }
 }

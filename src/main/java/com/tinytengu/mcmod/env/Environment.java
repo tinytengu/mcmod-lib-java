@@ -1,20 +1,13 @@
 package com.tinytengu.mcmod.env;
 
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.nodes.Tag;
+
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.nodes.Tag;
 
 /**
  * Mods environment class
@@ -95,9 +88,8 @@ public class Environment {
         InputStream inputStream = new FileInputStream(this.getYml().toString());
 
         // Loading YAML schema
-        Yaml yaml = new Yaml();
-        HashMap<String, Object> yamlMap = yaml.load(inputStream);
-        this.storage.load(yamlMap);
+        Yaml yaml = new Yaml(new Constructor(Storage.class));
+        this.setStorage(yaml.load(inputStream));
     }
 
     /**
