@@ -1,6 +1,6 @@
 package com.tinytengu.mcmod.env;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,23 +35,23 @@ class EnvironmentTest {
     void constructorString() {
         Environment env = new Environment("");
 
-        Assertions.assertEquals(env.getPath().toString(), userPath.toString());
-        Assertions.assertNotNull(env.getStorage());
+        assertEquals(env.getPath().toString(), userPath.toString());
+        assertNotNull(env.getStorage());
     }
 
     @Test
     void constructorPath() {
         Environment env = new Environment(Paths.get("").toAbsolutePath());
 
-        Assertions.assertEquals(env.getPath(), userPath);
-        Assertions.assertNotNull(env.getStorage());
+        assertEquals(env.getPath(), userPath);
+        assertNotNull(env.getStorage());
     }
 
     @Test
     void getYMLPath() {
         Environment env = new Environment("");
 
-        Assertions.assertEquals(env.getYml(), userPath.resolve("mcmod.yml"));
+        assertEquals(env.getYml(), userPath.resolve("mcmod.yml"));
     }
 
     @Test
@@ -62,8 +62,8 @@ class EnvironmentTest {
         HashMap defaults = env.getStorage().getDefaults();
         HashMap mods = env.getStorage().getMods();
 
-        Assertions.assertEquals(defaults.get("mcver"), "1.12.2");
-        Assertions.assertEquals(defaults.get("type"), "release");
+        assertEquals(defaults.get("mcver"), "1.12.2");
+        assertEquals(defaults.get("type"), "release");
 
         HashMap<String, HashMap> storageMods = new HashMap<String, HashMap>() {{
             put("jei", new HashMap<String, String>(){{
@@ -81,10 +81,10 @@ class EnvironmentTest {
         for (Map.Entry<String, HashMap> entry : storageMods.entrySet()) {
             String name = entry.getKey();
             HashMap values = entry.getValue();
-            Assertions.assertNotNull(mods.get(name));
+            assertNotNull(mods.get(name));
 
             values.forEach((vname, vvalue) -> {
-                Assertions.assertEquals(
+                assertEquals(
                         ((HashMap) mods.get(name)).get(vname),
                         vvalue
                 );
@@ -101,8 +101,8 @@ class EnvironmentTest {
         defaults.put("mcver", "1.16.2");
         defaults.put("type", "alpha");
 
-        Assertions.assertEquals(defaults.get("mcver"), "1.16.2");
-        Assertions.assertEquals(defaults.get("type"), "alpha");
+        assertEquals(defaults.get("mcver"), "1.16.2");
+        assertEquals(defaults.get("type"), "alpha");
     }
 
     @Test
@@ -113,7 +113,7 @@ class EnvironmentTest {
         HashMap<String, String> jei = env.getStorage().getMods().get("jei");
         jei.put("mcver", "1.5.2");
 
-        Assertions.assertEquals(jei.get("mcver"), "1.5.2");
+        assertEquals(jei.get("mcver"), "1.5.2");
     }
 
     @Test
@@ -130,7 +130,7 @@ class EnvironmentTest {
         env.load();
         defaults = env.getStorage().getDefaults();
 
-        Assertions.assertEquals(defaults.get("mcver"), "1.16.2");
-        Assertions.assertEquals(defaults.get("type"), "alpha");
+        assertEquals(defaults.get("mcver"), "1.16.2");
+        assertEquals(defaults.get("type"), "alpha");
     }
 }
