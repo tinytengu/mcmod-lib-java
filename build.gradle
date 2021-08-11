@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'com.tinytengu'
-version '0.1'
+version '0.3'
 
 repositories {
     mavenCentral()
@@ -15,6 +15,16 @@ dependencies {
 
     // https://mvnrepository.com/artifact/org.yaml/snakeyaml
     implementation 'org.yaml:snakeyaml:1.29'
+
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+
+    // https://mvnrepository.com/artifact/org.json/json
+    implementation 'org.json:json:20210307'
+
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.4'
+
 }
 
 test {
